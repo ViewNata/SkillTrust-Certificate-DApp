@@ -170,7 +170,9 @@
       : await readContract.getCertificateIds(account);
     const list = $("myCertificates"); list.innerHTML = "";
     if (!ids.length) { list.innerHTML = '<div class="empty">ยังไม่มีใบรับรองที่ผูกกับ wallet นี้</div>'; return; }
-    for (const rawId of ids) {
+    // Certificate IDs increase as certificates are issued, so descending IDs
+    // put the most recently issued certificate first in the dashboard.
+    for (const rawId of [...ids].sort((a, b) => Number(b) - Number(a))) {
       const id = Number(rawId), c = await readContract.getCertificate(id), course = await readContract.courses(c.courseId);
       const item = document.createElement("div"); item.className = "cert";
       const details = document.createElement("div"); details.innerHTML = `<b>${escapeHtml(course.code)} · ${escapeHtml(course.title)}</b><small>ID ${id} · ออก ${date(c.issuedAt)}<br>${c.documentHash}</small>`;
